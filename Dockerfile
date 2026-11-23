@@ -1,6 +1,12 @@
 
+# Use Nginx web server
 FROM nginx:alpine
 
-COPY . /usr/share/nginx/html
+# Copy website files into Nginx
+COPY . /usr/share/nginx/html/
 
-EXPOSE 80
+# Expose port 88
+EXPOSE 88
+
+# Start Nginx
+CMD ["nginx", "-g", "daemon off;"]
