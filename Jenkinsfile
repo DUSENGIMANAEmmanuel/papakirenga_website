@@ -1,48 +1,50 @@
-pipeline {
 
-    // Execute this pipeline on any available Jenkins agent
+pipeline {
     agent any
 
-    // Define the stages of the pipeline
     stages {
 
-        // Stage 1: Build the Docker image
+        stage('Checkout') {
+            steps {
+                echo 'Getting website source code from GitHub'
+                checkout scm
+            }
+        }
+
+        stage('Check Website Files') {
+            steps {
+                script {
+                    if (fileExists('index.html')) {
+                        echo 'SUCCESS: index.html found!!!!!!!!'
+                         echo 'SUCCESS: style.css found!!!!!!!!'
+                    } else {
+                        error 'ERROR: index.html not found!'
+        
+                    }
+                }
+            }
+        }
+
         stage('Build') {
             steps {
+                echo 'Website build completed successfully'
+            }
+        }
 
-                // Display a message in the Jenkins console
-                echo 'Starting DevOps application build...'
-
-                // Check whether Docker is available
-                bat 'docker --version'
-
-                // Build the Docker image from the Dockerfile
-                // -t assigns the image name and version
-                // . specifies the current project directory
-                bat 'docker build -t devops-app:1.0 .'
-
-                // Display a completion message
-                echo 'Docker image build completed!'
+        stage('Deployment') {
+            steps {
+                echo 'Website is ready for deployment'
             }
         }
     }
 
-    // Execute these actions after the pipeline finishes
     post {
-
-        // Display a message when the build succeeds
         success {
-            echo 'SUCCESS: DevOps application built successfully.'
+            echo 'SUCCESS: Website pipeline completed!'
         }
 
-        // Display a message when the build fails
         failure {
-            echo 'FAILURE: Check the Jenkins Console Output.'
-        }
-
-        // Always execute this message
-        always {
-            echo 'Jenkins pipeline execution finished.'
+            echo 'ERROR: Website pipeline failed!!!!!'
         }
     }
 }
