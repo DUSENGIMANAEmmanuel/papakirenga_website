@@ -16,8 +16,10 @@ pipeline {
                 script {
                     if (fileExists('index.html')) {
                         echo 'SUCCESS: index.html found!!!!!!!!'
+                         echo 'SUCCESS: style.css found!!!!!!!!'
                     } else {
                         error 'ERROR: index.html not found!'
+        
                     }
                 }
             }
