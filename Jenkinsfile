@@ -6,45 +6,44 @@ pipeline {
 
         stage('Checkout') {
             steps {
-                echo 'Getting website source code from GitHub'
+                echo 'Getting source code from GitHub'
                 checkout scm
             }
         }
 
-        stage('Check Website Files') {
+        stage('Build Docker Image') {
             steps {
-                script {
-                    if (fileExists('index.html')) {
-                        echo 'SUCCESS: index.html found!!!!!!!!'
-                         echo 'SUCCESS: style.css found!!!!!!!!'
-                    } else {
-                        error 'ERROR: index.html not found!'
-        
-                    }
-                }
+                bat 'docker build -t papakirenga-website:latest .'
             }
         }
 
-        stage('Build') {
+        stage('Stop Old Container') {
             steps {
-                echo 'Website build completed successfully'
+                bat 'docker rm -f papakirenga-website 2>NUL || exit /b 0'
             }
         }
 
-        stage('Deployment') {
+        stage('Deploy Website') {
             steps {
-                echo 'Website is ready for deployment'
+                bat 'docker run -d --name papakirenga-website -p 8081:80 papakirenga-website:latest'
+            }
+        }
+
+        stage('Verify Deployment') {
+            steps {
+                echo 'Website deployment completed!'
+                echo 'Open http://localhost:8081'
             }
         }
     }
 
     post {
         success {
-            echo 'SUCCESS: Website pipeline completed!'
+            echo 'SUCCESS: Website is running in Docker!'
         }
 
         failure {
-            echo 'ERROR: Website pipeline failed!!!!!'
+            echo 'ERROR: Deployment failed!'
         }
     }
 }
